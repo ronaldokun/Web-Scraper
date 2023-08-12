@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 db = SQLAlchemy(app)
 
@@ -102,9 +102,8 @@ def get_product_results():
 @app.route('/all-results', methods=['GET'])
 def get_results():
     results = ProductResult.query.all()
-    product_results = []
-    for result in results:
-        product_results.append({
+    product_results = [
+        {
             'name': result.name,
             'url': result.url,
             'price': result.price,
@@ -112,9 +111,10 @@ def get_results():
             'date': result.created_at,
             "created_at": result.created_at,
             "search_text": result.search_text,
-            "source": result.source
-        })
-
+            "source": result.source,
+        }
+        for result in results
+    ]
     return jsonify(product_results)
 
 
@@ -161,15 +161,15 @@ def toggle_tracked_product(product_id):
 def get_tracked_products():
     tracked_products = TrackedProducts.query.all()
 
-    results = []
-    for product in tracked_products:
-        results.append({
+    results = [
+        {
             'id': product.id,
             'name': product.name,
             'created_at': product.created_at,
-            'tracked': product.tracked
-        })
-
+            'tracked': product.tracked,
+        }
+        for product in tracked_products
+    ]
     return jsonify(results), 200
 
 
